@@ -11,7 +11,7 @@ st.title("CricShot Image Classification")
 
 st.write("Predict the cricshot that is being represented in the image.")
 
-model = load_model("C:/Users/sathi/OneDrive/Documents/thaniga/crickshot/model1.h5",custom_objects={'KerasLayer':hub.KerasLayer})
+model = load_model("model1.h5",custom_objects={'KerasLayer':hub.KerasLayer})
 labels = {
       0: 'Drive',
     1: 'Legglance',
