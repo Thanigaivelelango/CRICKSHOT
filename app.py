@@ -1,34 +1,45 @@
+
+
 import streamlit as st
-import numpy as np
+import tensorflow_hub as hub
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.models import load_model
+
 from PIL import Image
-import tensorflow as tf
+import numpy as np
+st.title("CricShot Image Classification")
 
-# Load your saved ResNet model
-resnet_model = tf.keras.models.load_model("model1.h5")
+st.write("Predict the cricshot that is being represented in the image.")
 
-# Define class labels
-class_labels = ["Drive", "Legglance", "Pullshot", "Sweep"]
+model = load_model("C:/Users/sathi/OneDrive/Documents/thaniga/crickshot/model1.h5",custom_objects={'KerasLayer':hub.KerasLayer})
+labels = {
+      0: 'Drive',
+    1: 'Legglance',
+    2: 'Pullshot',
+    3: 'Sweep',
+}
+uploaded_file = st.file_uploader(
+    "Upload an image of a cricketingshot:", type=['jpg','png','jpeg']
+)
+predictions=-1
+if uploaded_file is not None:
+    image1 = Image.open(uploaded_file)
+    image1=image.smart_resize(image1,(64,64))
+    img_array = image.img_to_array(image1)
+    img_array = np.expand_dims(img_array, axis=0)
+    img_array = img_array/255.0
+    predictions = model.predict(img_array)
+    label=labels[np.argmax(predictions)]
 
-# Set Streamlit app title
-st.title("Cricket Shot Classifier")
 
-# Upload an image for prediction
-uploaded_image = st.file_uploader("Upload an image...", type=["jpg", "jpeg", "png"])
-
-if uploaded_image is not None:
-    # Display the uploaded image
-    st.image(uploaded_image, caption="Uploaded Image", use_column_width=True)
-
-    # Preprocess the image
-    image = Image.open(uploaded_image)
-    image = image.resize((64, 64))
-    image = np.array(image) / 255.0
-    image = np.expand_dims(image, axis=0)
-
-    # Make predictions
-    predictions = resnet_model.predict(image)
-    predicted_class = class_labels[np.argmax(predictions)]
-
-    # Display the predicted class
-    st.subheader("Prediction:")
-    st.write(f"The predicted class is: {predicted_class}")
+st.write("### Prediction Result")
+if st.button("Predict"):
+    if uploaded_file is not None:
+        image1 = Image.open(uploaded_file)
+        st.image(image1, caption="Uploaded Image", use_column_width=True)
+        st.markdown(
+            f"<h2 style='text-align: center;'>Image of {label}</h2>",
+            unsafe_allow_html=True,
+        )
+    else:
+        st.write("Please upload file or choose sample image.")
