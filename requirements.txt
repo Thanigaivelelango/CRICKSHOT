@@ -1,3 +1,2 @@
 tensorflow
 streamlit
-tenserflow_hub
